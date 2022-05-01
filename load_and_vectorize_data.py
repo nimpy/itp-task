@@ -10,6 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest, f_classif
 
 
+# TODO read these from a config file
 data_dir = 'data/'
 train_filename = 'train_v2_set_top_5.pkl'
 test_filename = 'test_v2_set_top_5.pkl'
@@ -94,6 +95,35 @@ def ngram_vectorize(train_texts, train_labels, test_texts):
     return x_train, x_test
 
 
+def get_num_classes(labels):
+    """Gets the total number of classes.
+    # Arguments
+        labels: list, label values.
+            There should be at lease one sample for values in the
+            range (0, num_classes -1)
+    # Returns
+        int, total number of classes.
+    # Raises
+        ValueError: if any label value in the range(0, num_classes - 1)
+            is missing or if number of classes is <= 1.
+    """
+    num_classes = max(labels) + 1
+    missing_classes = [i for i in range(num_classes) if i not in labels]
+    if len(missing_classes):
+        raise ValueError('Missing samples with label value(s) '
+                         '{missing_classes}. Please make sure you have '
+                         'at least one sample for every label value '
+                         'in the range(0, {max_class})'.format(
+                            missing_classes=missing_classes,
+                            max_class=num_classes - 1))
+
+    if num_classes <= 1:
+        raise ValueError('Invalid number of labels: {num_classes}.'
+                         'Please make sure there are at least two classes '
+                         'of samples'.format(num_classes=num_classes))
+    return num_classes
+
+
 if __name__ == '__main__':
     train_texts, train_labels = load_data_into_lists(train_filepath)
     print(train_texts, train_labels)
@@ -107,3 +137,5 @@ if __name__ == '__main__':
     x_train, x_test = ngram_vectorize(train_texts, train_labels, test_texts)
     print()
 
+    # TODO shuffle!!!
+    # TODO split test set into validation and test set!

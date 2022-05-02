@@ -1,9 +1,8 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+# from __future__ import absolute_import
+# from __future__ import division
+# from __future__ import print_function
 
-import argparse
-import time
+from sklearn.utils import shuffle
 
 import datetime
 
@@ -12,7 +11,6 @@ import numpy as np
 
 import build_model
 import load_and_vectorize_data
-# import explore_data
 
 FLAGS = None
 
@@ -98,13 +96,24 @@ if __name__ == '__main__':
     train_texts, train_labels = load_and_vectorize_data.load_data_into_lists(load_and_vectorize_data.train_filepath)
     print(train_texts, train_labels)
 
-    test_texts, test_labels = load_and_vectorize_data.load_data_into_lists(load_and_vectorize_data.test_filepath)
-    print(test_texts, test_labels)
+    val_test_texts, val_test_labels = load_and_vectorize_data.load_data_into_lists(load_and_vectorize_data.test_filepath)
+    print(val_test_texts, val_test_labels)
+
+    # shuffle the texts and labels
+    shuffle_random_seed = 42
+    train_texts, train_labels = shuffle(train_texts, train_labels, random_state=shuffle_random_seed)
+    # TODO make sure that the val and test set are always split in the same way
+    val_test_texts, val_test_labels = shuffle(val_test_texts, val_test_labels, random_state=shuffle_random_seed)
+
+    # split the val + test dataset into val dataset and test dataset
+    val_texts, val_labels, test_texts, test_labels = load_and_vectorize_data.split_val_test_set(val_test_texts,
+                                                                                                val_test_labels)
 
     train_labels = np.array(train_labels)
+    val_labels = np.array(val_labels)
     test_labels = np.array(test_labels)
 
-    data = ((train_texts, train_labels), (test_texts, test_labels))
+    data = ((train_texts, train_labels), (val_texts, val_labels))
 
     history = train_ngram_model(data)
     print(history)

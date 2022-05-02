@@ -8,6 +8,7 @@ import numpy as np
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.utils import shuffle
 
 
 # TODO read these from a config file
@@ -124,18 +125,36 @@ def get_num_classes(labels):
     return num_classes
 
 
+def split_val_test_set(val_test_texts, val_test_labels):
+    val_set_count = len(val_test_labels) // 2
+    val_texts = val_test_texts[: val_set_count]
+    val_labels = val_test_labels[: val_set_count]
+    test_texts = val_test_texts[val_set_count:]
+    test_labels = val_test_labels[val_set_count:]
+    return val_texts, val_labels, test_texts, test_labels
+
+
 if __name__ == '__main__':
     train_texts, train_labels = load_data_into_lists(train_filepath)
     print(train_texts, train_labels)
 
-    test_texts, test_labels = load_data_into_lists(test_filepath)
-    print(test_texts, test_labels)
+    val_test_texts, val_test_labels = load_data_into_lists(test_filepath)
+    print(val_test_texts, val_test_labels)
+
+    # shuffle the texts and labels
+    shuffle_random_seed = 42
+    train_texts, train_labels = shuffle(train_texts, train_labels, random_state=shuffle_random_seed)
+    # here I would make sure that the val and test set are always split in the same way
+    val_test_texts, val_test_labels = shuffle(val_test_texts, val_test_labels, random_state=shuffle_random_seed)
+
+    # split the val + test dataset into val dataset and test dataset
+    val_texts, val_labels, test_texts, test_labels = split_val_test_set(val_test_texts, val_test_labels)
 
     train_labels = np.array(train_labels)
+    val_labels = np.array(val_labels)
     test_labels = np.array(test_labels)
 
-    x_train, x_test = ngram_vectorize(train_texts, train_labels, test_texts)
+    x_train, x_val = ngram_vectorize(train_texts, train_labels, val_texts)
     print()
 
-    # TODO shuffle!!!
-    # TODO split test set into validation and test set!
+    # TODO preprocess the data

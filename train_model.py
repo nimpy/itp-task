@@ -8,6 +8,7 @@ import numpy as np
 
 import build_model
 import load_and_process_data
+import evaluate_model
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--params_path', default='params.json',
@@ -66,7 +67,7 @@ def train_ngram_model(data, learning_rate=1e-3, epochs=1000, batch_size=128, lay
     else:
         loss = 'sparse_categorical_crossentropy'
     optimizer = tf.keras.optimizers.Adam(lr=learning_rate)
-    model.compile(optimizer=optimizer, loss=loss, metrics=['acc'])
+    model.compile(optimizer=optimizer, loss=loss, metrics=['acc'])  # TODO add F1 score to metrics
 
     # Create callback for early stopping on validation loss. If the loss does
     # not decrease in two consecutive tries, stop training.
@@ -87,6 +88,7 @@ def train_ngram_model(data, learning_rate=1e-3, epochs=1000, batch_size=128, lay
     history = history.history
     print('Validation accuracy: {acc}, loss: {loss}'.format(
             acc=history['val_acc'][-1], loss=history['val_loss'][-1]))
+    print('F1 micro score:', evaluate_model.evaluate_model_on_test_set(model))
 
     # Save model.
     model.save('weights/model_mlp_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + '.h5')

@@ -140,6 +140,40 @@ def load_train_val_test_datasets(train_filepath, val_test_filepath, shuffle_rand
     return train_texts, train_labels, val_texts, val_labels, test_texts, test_labels
 
 
+def ingredients_preprocessing(ingredients_lists):
+    """Preprocess the text data (ingredients list) by making the strings lowercase and removing some characters.
+
+    Making the strings lowercase should make the data more consistent.
+
+    My original idea was to remove the following characters as part of preprocessing: ,!()®™
+    However, after doing some quick testing and training, I noticed that removing ® and ™ significantly decreases the
+    performance, while removing ',', '!', '(' and ')' doesn't have almost any impact.
+
+    If I had more time, I would have made different kinds of preprocessing hyperparameters to be tuned (e.g. each
+    special character to be removed can be a hyperparameter).
+
+    I would also consider removing numbers, but I would keep in mind that when they appear as 2-grams they could
+    provide useful information: e.g. 2 chillies (common in italian cuisine) vs 20 chillies (more common in mexican
+    cuisine)).
+
+    # Arguments
+        ingredients_lists: list of strings, where these strings are ingredients.
+    # Returns
+        preprocessed_ingredients_lists: list of strings, where these strings are preprocessed ingredients.
+    """
+    preprocessed_ingredients_lists = []
+    for ingredients_list in ingredients_lists:
+        preprocessed_ingredients_list = ingredients_list.lower()
+
+        # # removing characters, which needs to be further looked into (for the moment I commented it out)
+        # obj = filter(lambda ch: ch not in ",!()", preprocessed_ingredients_list)  # ,!()®™
+        # preprocessed_ingredients_list = "".join(list(obj))
+
+        preprocessed_ingredients_lists.append(preprocessed_ingredients_list)
+
+    return preprocessed_ingredients_lists
+
+
 if __name__ == '__main__':
 
     args = parser.parse_args()
@@ -149,9 +183,13 @@ if __name__ == '__main__':
     train_filepath = os.path.join(params.data_dir, params.train_filename)
     val_test_filepath = os.path.join(params.data_dir, params.val_test_filename)
 
-
     train_texts, train_labels, val_texts, val_labels, test_texts, test_labels = load_train_val_test_datasets(
                                                                                 train_filepath, val_test_filepath)
+
+    if params.preprocessing:
+        train_texts = ingredients_preprocessing(train_texts)
+        val_texts = ingredients_preprocessing(val_texts)
+        test_texts = ingredients_preprocessing(test_texts)
 
     x_train, x_val = ngram_vectorize(train_texts, train_labels, val_texts, ngram_range=params.ngram_range,
                                      ngram_top_k=params.ngram_top_k,
@@ -159,4 +197,3 @@ if __name__ == '__main__':
                                      ngram_min_document_frequency=params.ngram_min_document_frequency)
     print()
 
-    # TODO preprocess the data

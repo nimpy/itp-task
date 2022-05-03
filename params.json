@@ -4,6 +4,8 @@
     "train_filename": "train_v2_set_top_5.pkl",
     "val_test_filename": "test_v2_set_top_5.pkl",
 
+    "preprocessing": 1,
+
     "mlp_model_layers": 2,
     "mlp_model_units": 64,
     "mlp_model_dropout_rate": 0.2,

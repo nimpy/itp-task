@@ -22,6 +22,10 @@ val_test_filepath = os.path.join(params.data_dir, params.val_test_filename)
 train_texts, train_labels, val_texts, val_labels, _, _ = \
     load_and_process_data.load_train_val_test_datasets(train_filepath, val_test_filepath)
 
+if params.preprocessing:
+    train_texts = load_and_process_data.ingredients_preprocessing(train_texts)
+    val_texts = load_and_process_data.ingredients_preprocessing(val_texts)
+
 x_train, x_val = load_and_process_data.ngram_vectorize(train_texts, train_labels, val_texts)
 
 

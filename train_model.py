@@ -105,6 +105,11 @@ if __name__ == '__main__':
     train_texts, train_labels, val_texts, val_labels, test_texts, test_labels = \
         load_and_process_data.load_train_val_test_datasets(train_filepath, val_test_filepath)
 
+    if params.preprocessing:
+        train_texts = load_and_process_data.ingredients_preprocessing(train_texts)
+        val_texts = load_and_process_data.ingredients_preprocessing(val_texts)
+        test_texts = load_and_process_data.ingredients_preprocessing(test_texts)
+
     data = ((train_texts, train_labels), (val_texts, val_labels))
 
     trained_model, history, f1_micro_score = train_ngram_model(data, learning_rate=params.mlp_model_learning_rate,

@@ -15,7 +15,7 @@ parser.add_argument('--params_path', default='params.json',
                     help="Path to json file with parameters")
 
 
-def train_ngram_model(data, learning_rate=1e-3, epochs=1000, batch_size=128, layers=2,units=64, dropout_rate=0.2,
+def train_ngram_model(data, learning_rate=1e-3, epochs=1000, batch_size=128, layers=2, units=64, dropout_rate=0.2,
                       ngram_range=2, ngram_top_k=20000, ngram_token_mode="word", ngram_min_document_frequency=2):
     """Trains n-gram model on the given dataset.
     # Arguments
@@ -72,7 +72,7 @@ def train_ngram_model(data, learning_rate=1e-3, epochs=1000, batch_size=128, lay
     # Create callback for early stopping on validation loss. If the loss does
     # not decrease in two consecutive tries, stop training.
     callbacks = [tf.keras.callbacks.EarlyStopping(
-        monitor='val_loss', patience=2)]
+        monitor='val_loss', patience=3)]  # TODO consider relaxing this?
 
     # Train and validate model.
     history = model.fit(
@@ -85,14 +85,12 @@ def train_ngram_model(data, learning_rate=1e-3, epochs=1000, batch_size=128, lay
             batch_size=batch_size)
 
     # Print results.
-    history = history.history
     print('Validation accuracy: {acc}, loss: {loss}'.format(
-            acc=history['val_acc'][-1], loss=history['val_loss'][-1]))
-    print('F1 micro score:', evaluate_model.evaluate_model_on_test_set(model))
+            acc=history.history['val_acc'][-1], loss=history.history['val_loss'][-1]))
+    evaluation_metric_score = evaluate_model.evaluate_model_on_test_set(model)
+    print('Evaluation metric score:', evaluation_metric_score)
 
-    # Save model.
-    model.save('weights/model_mlp_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + '.h5')
-    return history['val_acc'][-1], history['val_loss'][-1]
+    return model, history.history, evaluation_metric_score
 
 
 if __name__ == '__main__':
@@ -109,12 +107,19 @@ if __name__ == '__main__':
 
     data = ((train_texts, train_labels), (val_texts, val_labels))
 
-    history = train_ngram_model(data, learning_rate=params.mlp_model_learning_rate, epochs=params.mlp_model_epochs,
-                                batch_size=params.mlp_model_batch_size, layers=params.mlp_model_layers,
-                                units=params.mlp_model_units, dropout_rate=params.mlp_model_dropout_rate,
-                                ngram_range=params.ngram_range, ngram_top_k=params.ngram_top_k,
-                                ngram_token_mode=params.ngram_token_mode,
-                                ngram_min_document_frequency=params.ngram_min_document_frequency)
+    trained_model, history, f1_micro_score = train_ngram_model(data, learning_rate=params.mlp_model_learning_rate,
+                                                       epochs=params.mlp_model_epochs,
+                                                       batch_size=params.mlp_model_batch_size,
+                                                       layers=params.mlp_model_layers,
+                                                       units=params.mlp_model_units,
+                                                       dropout_rate=params.mlp_model_dropout_rate,
+                                                       ngram_range=params.ngram_range, ngram_top_k=params.ngram_top_k,
+                                                       ngram_token_mode=params.ngram_token_mode,
+                                                       ngram_min_document_frequency=params.ngram_min_document_frequency)
+
+    model_filepath = os.path.join(params.weights_dir,
+                                  'model_mlp_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + '.h5')
+    trained_model.save(model_filepath)
     print(history)
 
 

@@ -1,9 +1,16 @@
 import tensorflow as tf
 import numpy as np
 import collections
+import argparse
+import os
 
 from build_model import mlp_model
 import load_and_process_data
+import utils
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--params_path', default='params.json',
+                    help="Path to json file with parameters")
 
 
 def load_model(filepath):
@@ -22,13 +29,21 @@ def load_model(filepath):
 
 
 if __name__ == '__main__':
-    train_texts, train_labels, val_texts, val_labels, test_texts, test_labels = load_and_process_data.load_train_val_test_datasets(
-        load_and_process_data.train_filepath, load_and_process_data.test_filepath)
+
+    args = parser.parse_args()
+    assert os.path.isfile(args.params_path), "No json configuration file found at {}".format(args.params_path)
+    params = utils.Params(args.params_path)
+
+    train_filepath = os.path.join(params.data_dir, params.train_filename)
+    val_test_filepath = os.path.join(params.data_dir, params.val_test_filename)
+
+    train_texts, train_labels, val_texts, val_labels, test_texts, test_labels = \
+        load_and_process_data.load_train_val_test_datasets(train_filepath, val_test_filepath)
 
     x_train, x_test = load_and_process_data.ngram_vectorize(train_texts, train_labels, test_texts)
-    _, x_val = load_and_process_data.ngram_vectorize(train_texts, train_labels, val_texts)  # TODO put it in 1 method
+    _, x_val = load_and_process_data.ngram_vectorize(train_texts, train_labels, val_texts)
 
-    filepath = 'weights/model_mlp_20220502_150757.h5'
+    filepath = 'weights/model_mlp_20220502_200753.h5'
     model = load_model(filepath)
 
     y_test_pred = model.predict(x_test)

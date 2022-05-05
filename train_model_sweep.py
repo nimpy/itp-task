@@ -32,7 +32,7 @@ x_train, x_val = load_and_process_data.ngram_vectorize(train_texts, train_labels
 # TODO implement logging instead of printing
 def train_ngram_model_sweep_pass():
 
-    sweep_version = 'sweep_second_try'  # TODO change in both files (TODO make it a parameter)
+    sweep_version = 'sweep_v3'  # TODO change in both files (TODO make it a parameter)
     model_filename = "model_mlp_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + ".h5"
     model_filepath = os.path.join(params.weights_dir, sweep_version, model_filename)
     Path(os.path.join(params.weights_dir, sweep_version)).mkdir(parents=True, exist_ok=True)

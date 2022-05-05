@@ -23,6 +23,7 @@
 
 
 This structure of the repository is initial, and I would update it and improve it further on as I would see fit.
+Parts of the code were taken from [this Google tutorial on text classification](https://developers.google.com/machine-learning/guides/text-classification).
 
 
 #### Suggested order in which to look at the files:
@@ -36,4 +37,17 @@ This structure of the repository is initial, and I would update it and improve i
 7. [sweep.py](sweep.py)
 8. [train_model_sweep.py](train_model_sweep.py)
 9. [utils.py](utils.py)
+
+
+### Hyperparameter sweep results
+
+Hyperparameter sweep results and overview can be viewed in [this Weights & Biases report](https://wandb.ai/nimpy/itp-task/reports/MLP-model-hyperparameter-sweep--VmlldzoxOTQ4NzQ1?accessToken=xuk2qscwdtdy7n6oynpwhb5jrcme8ijgvxdnsc8bq4v2npzkpryewlo4uwxtzfh9).
+
+### Things I would have done if I had more time
+* I would implement the TODO's
+* I would add docstrings everywhere
+* I would add logging
+* I would add requirements.txt
+* I would probably go through more iterations of restructuring the project as I would keep working on it
+
 

@@ -11,7 +11,7 @@ import utils
 parser = argparse.ArgumentParser()
 parser.add_argument('--params_path', default='params.json',
                     help="Path to json file with parameters")
-parser.add_argument('--model_filename', default='model_mlp_20220502_195902.h5',
+parser.add_argument('--model_filename', default='model_mlp.h5',
                     help="Filename of the model to be loaded")
 
 args = parser.parse_args()

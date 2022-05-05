@@ -45,7 +45,7 @@ if __name__ == '__main__':
         }
     }
 
-    sweep_version = 'sweep_second_try'  # TODO change in both files (TODO make it a parameter)
+    sweep_version = 'sweep_v3'  # TODO change in both files (TODO make it a parameter)
 
     sweep_id = wandb.sweep(sweep_config, project="itp-task")
     wandb.agent(sweep_id, function=train_ngram_model_sweep_pass)

@@ -5,6 +5,8 @@
 📁 [notebooks/](notebooks) – a directory with Jupyter notebooks (currently has only one)
 * 📄 [playing_with_data.ipynb](notebooks/playing_with_data.ipynb) – notebook where I initially explored the data
 
+📁 [weights_pub/](weights_pub) – a directory with the weights of the best performing model, as established by the hyperparameter sweep (included on GitHub for simplicity)
+
 📄 [build_model.py](build_model.py) – contains the architecture of the neural network used for this project (multi-layer perceptron)
 
 📄 [evaluate_model.py](evaluate_model.py) – contains the implementations of model evaluation based on different metrics
